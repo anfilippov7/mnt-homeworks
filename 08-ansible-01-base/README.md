@@ -185,7 +185,175 @@ db:
   <img width="1200" height="600" src="./image/task1_4.png">
 </p> 
  
-5. Напишите скрипт на bash: автоматизируйте поднятие необходимых контейнеров, запуск ansible-playbook и остановку контейнеров.
+5. Создаем скрипт на bash: автоматизируем поднятие необходимых контейнеров, запуск ansible-playbook и остановку контейнеров:
+```
+#!/usr/bin/env bash
+
+ansible_playbook_home="../playbook"
+ansible_password_file="./password"
+
+
+declare -A image
+
+image["ubuntu"]="pycontribs/ubuntu"
+image["centos7"]="pycontribs/centos:7"
+image["fedora"]="pycontribs/fedora"
+
+
+#**********************************************************#
+
+function start_containers() {
+
+  for container in ${!image[@]}
+    do
+      echo -e "--- Launching a docker container \"${container}\" from image \"${image[${container}]}\": ---"
+      if docker run -d -t --rm --name ${container} ${image[${container}]} > /dev/null
+        then
+          echo -e "--- Done. ---\n"
+        else
+          echo -e "--- Error while starting docker container... Exit. ---\n"
+          exit 1
+      fi
+    done
+}
+
+
+function stop_containers() {
+
+    for container in ${!image[@]}
+      do
+        echo -e "--- Stoping a docker container \"${container}\" from image \"${image[${container}]}\": ---"
+        if docker container stop ${container} > /dev/null
+          then
+            echo -e "--- Done. ---\n"
+          else
+            echo -e "--- Error while stoping docker container... Exit. ---\n"
+            exit 1
+        fi
+
+      done
+}
+
+
+function play_ansible() {
+
+    if cd ${ansible_playbook_home}
+      then
+        echo -e "\n--- Running ansible playbook: ---\n"
+        ansible-playbook site.yml -i inventory/prod.yml --vault-password-file ${ansible_password_file}
+      else
+        echo -e "\n--- Error when changing directory... Exit. ---\n"
+        stop_containers
+        exit 1
+    fi
+}
+
+
+#**********************************************************#
+
+echo -e "\n--- Launching docker containers... : ---\n"
+start_containers
+
+
+echo -e "\n--- The following docker containers are running: ---\n"
+docker ps
+
+
+echo -e "\n--- Changing the directory with ansible playbook \"${ansible_playbook_home}\": ---\n"
+play_ansible
+
+
+echo -e "\n--- Stopping docker containers... : ---"
+stop_containers
+```
+
+ - выполняем запуск скрипта командой ***bash auto_example.sh***, получаем результат: 
+
+```
+aleksander@aleksander-MS-7641:~/mnt-homeworks/08-ansible-01-base/bash$ bash auto_example.sh 
+
+--- Launching docker containers... : ---
+
+--- Launching a docker container "centos7" from image "pycontribs/centos:7": ---
+--- Done. ---
+
+--- Launching a docker container "fedora" from image "pycontribs/fedora": ---
+--- Done. ---
+
+--- Launching a docker container "ubuntu" from image "pycontribs/ubuntu": ---
+--- Done. ---
+
+
+--- The following docker containers are running: ---
+
+CONTAINER ID   IMAGE                 COMMAND       CREATED                  STATUS                  PORTS     NAMES
+946534c8ed24   pycontribs/ubuntu     "/bin/bash"   Less than a second ago   Up Less than a second             ubuntu
+701d4dbe1338   pycontribs/fedora     "/bin/bash"   1 second ago             Up Less than a second             fedora
+426b3e96523f   pycontribs/centos:7   "/bin/bash"   1 second ago             Up Less than a second             centos7
+
+--- Changing the directory with ansible playbook "../playbook": ---
+
+
+--- Running ansible playbook: ---
+
+
+PLAY [Print os facts] ***********************************************************************************************************************************************************
+
+TASK [Gathering Facts] **********************************************************************************************************************************************************
+ok: [localhost]
+ok: [fedora]
+ok: [ubuntu]
+ok: [centos7]
+
+TASK [Print OS] *****************************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "CentOS"
+}
+ok: [localhost] => {
+    "msg": "Ubuntu"
+}
+ok: [ubuntu] => {
+    "msg": "Ubuntu"
+}
+ok: [fedora] => {
+    "msg": "Fedora"
+}
+
+TASK [Print fact] ***************************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "el default fact"
+}
+ok: [ubuntu] => {
+    "msg": "deb default fact"
+}
+ok: [localhost] => {
+    "msg": "PaSSw0rd"
+}
+ok: [fedora] => {
+    "msg": "db default fact"
+}
+
+PLAY RECAP **********************************************************************************************************************************************************************
+centos7                    : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+fedora                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+ubuntu                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+--- Stopping docker containers... : ---
+--- Stoping a docker container "centos7" from image "pycontribs/centos:7": ---
+--- Done. ---
+
+--- Stoping a docker container "fedora" from image "pycontribs/fedora": ---
+--- Done. ---
+
+--- Stoping a docker container "ubuntu" from image "pycontribs/ubuntu": ---
+--- Done. ---
+
+```
+
+
+
 6. Все изменения должны быть зафиксированы и отправлены в ваш личный репозиторий.
 
 ## Необязательная часть
