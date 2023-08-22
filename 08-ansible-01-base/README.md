@@ -109,6 +109,88 @@ local:
 </p>
 
 
+## Решение необязательная часть
+
+1. При помощи `ansible-vault` расшифруйте зашифрованные файлы с переменными (group_vars/deb/examp.yml и group_vars/el/examp.yml).
+
+ - вводим две команды с паролем netology:
+	***ansible-vault decrypt group_vars/deb/examp.yml***
+	***ansible-vault decrypt group_vars/el/examp.yml***
+
+Фиксируем успешное выполнение команд выше:
+<p align="center">
+  <img width="1200" height="600" src="./image/task1_1.png">
+</p>
+
+2. Шифруем значение `PaSSw0rd` для переменной `some_fact` паролем `netology` и добавляем полученное значение в `group_vars/all/exmp.yml`.
+```
+aleksander@aleksander-MS-7641:~/mnt-homeworks/08-ansible-01-base/playbook$ ansible-vault encrypt_string
+New Vault password: 
+Confirm New Vault password: 
+Reading plaintext input from stdin. (ctrl-d to end input, twice if your content does not already have a newline)
+PaSSw0rd
+Encryption successful
+!vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38613562633836333635383038363862383034356363333136333637333332633438666131343531
+          3065353163363431336263626664653539623361623763660a623963336339623337626137303462
+          65366364383530353333663132636230623738383764663132363865646432363838643430626262
+          6234346533323164360a333833323738313563633465326366376432646534646661346337383239
+          6563
+
+```
+
+```
+---
+some_fact: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  38613562633836333635383038363862383034356363333136333637333332633438666131343531
+  3065353163363431336263626664653539623361623763660a623963336339623337626137303462
+  65366364383530353333663132636230623738383764663132363865646432363838643430626262
+  6234346533323164360a333833323738313563633465326366376432646534646661346337383239
+  6563
+```
+
+3. Запускаем `playbook` с помощью команды ***ansible-playbook -i inventory/prod.yml site.yml --ask-vault-pass*** и вводим пароль netology, фиксируем новый `fact` для localhost:
+<p align="center">
+  <img width="1200" height="600" src="./image/task1_3.png">
+</p>
+
+4. Запускаем `docker` образ fedora, выполняем команду:
+   ***docker run --name fedora -d pycontribs/fedora***
+
+ - в файл prod.yml добавляем перепенную db и записываем в нее группу хостов `fedora`
+```
+---
+el:
+  hosts:
+    centos7:
+      ansible_connection: docker
+deb:
+  hosts:
+    ubuntu:
+      ansible_connection: docker
+local:
+  hosts:
+    localhost:
+      ansible_connection: local
+db:
+  hosts:
+    fedora:
+      ansible_connection: docker
+```
+
+ - запускаем `playbook` с помощью команды ***ansible-playbook -i inventory/prod.yml site.yml --ask-vault-pass*** и вводим пароль netology, фиксируем новую группу fedora:
+<p align="center">
+  <img width="1200" height="600" src="./image/task1_4.png">
+</p> 
+ 
+5. Напишите скрипт на bash: автоматизируйте поднятие необходимых контейнеров, запуск ansible-playbook и остановку контейнеров.
+6. Все изменения должны быть зафиксированы и отправлены в ваш личный репозиторий.
+
+## Необязательная часть
+
+
 ### Как оформить решение задания
 
 Выполненное домашнее задание пришлите в виде ссылки на .md-файл в вашем репозитории.
