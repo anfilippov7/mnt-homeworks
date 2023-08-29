@@ -20,6 +20,25 @@
 9. Подготовьте README.md-файл по своему playbook. В нём должно быть описано: что делает playbook, какие у него есть параметры и теги. Пример качественной документации ansible playbook по [ссылке](https://github.com/opensearch-project/ansible-playbook).
 10. Готовый playbook выложите в свой репозиторий, поставьте тег `08-ansible-02-playbook` на фиксирующий коммит, в ответ предоставьте ссылку на него.
 
+## Решение
+
+1. Выполняем подготовку inventory-файл `prod.yml`, дописываем следующий код:
+```
+---
+clickhouse:
+  hosts:
+    clickhouse-01:
+      ansible_host: 192.168.1.31
+      ansible_user: ansible
+vector:
+  hosts:
+    vector-01:
+      ansible_host: 192.168.1.31
+    vector-02:
+      ansible_host: 192.168.1.32
+      ansible_user: aleksander
+```
+
 ---
 
 ### Как оформить решение задания
