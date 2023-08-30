@@ -38,7 +38,73 @@ vector:
       ansible_host: 192.168.1.32
       ansible_user: aleksander
 ```
+2. Дописываем playbook, устанавливаем и настраиваем ***vector***
+```
+- name: Install Vector
+  hosts: vector
+  handlers:
+    - name: Start vector service
+      become: true
+      ansible.builtin.service:
+        name: vector
+        state: restarted
+  tasks:
+    - name: Get vector distrib
+      ansible.builtin.get_url:
+        url: https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm
+        dest: ./vector-{{ vector_version }}-1.x86_64.rpm
+        mode: 0755
+    - name: Install vectore rpm
+      become: true
+      ansible.builtin.yum:
+        disable_gpg_check: true
+        name: vector-{{ vector_version }}-1.x86_64.rpm
+      notify: Start vector service
+```
+Проверяем корректную работу ansible-playbook -i inventory/prod.yml site.yml 
+<p align="center">
+  <img width="1200" height="600" src="./image/task1.png">
+</p>
 
+
+5. Запускаем `ansible-lint site.yml`, результат выполнения команды:
+```
+aleksander@aleksander-MS-7641:~/mnt-homeworks/08-ansible-02-playbook/playbook$ ansible-lint site.yml
+WARNING: PATH altered to include /usr/bin
+WARNING  Overriding detected file kind 'yaml' with 'playbook' for given positional argument: site.yml
+an AnsibleCollectionFinder has not been installed in this process
+```
+Исправляем 'playbook' на 'playbooks'
+Выполняем экспорт ***$ export PATH=/usr/bin***
+
+Запускаем `ansible-lint site.yml`, результат выполнения команды:
+```
+aleksander@aleksander-MS-7641:~/mnt-homeworks/08-ansible-02-playbook/playbook$ ansible-lint site.yml
+an AnsibleCollectionFinder has not been installed in this process
+```
+ 
+```
+aleksander@aleksander-MS-7641:~/mnt-homeworks/08-ansible-02-playbook/playbook$ ansible-lint site.yml
+WARNING: PATH altered to include /usr/bin
+WARNING  Overriding detected file kind 'yaml' with 'playbook' for given positional argument: site.yml
+an AnsibleCollectionFinder has not been installed in this process
+```
+
+6. Запусаем playbook на этом окружении с флагом `--check`
+<p align="center">
+  <img width="1200" height="600" src="./image/task6.png">
+</p>
+
+7. Запускаем playbook на `prod.yml` окружении с флагом `--diff`, изменения произведены:
+<p align="center">
+  <img width="1200" height="600" src="./image/task7.png">
+</p>
+
+8. Повторно запускаем playbook с флагом `--diff` и убеждаемся, что playbook идемпотентен:
+<p align="center">
+  <img width="1200" height="600" src="./image/task8.png">
+</p> 
+ 
 ---
 
 ### Как оформить решение задания
