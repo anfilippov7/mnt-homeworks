@@ -639,6 +639,62 @@ http {
   <img width="1200" height="600" src="./image/task6.png">
 </p> 
 
+
+8. Создаем два репозитория ('vector-role' и 'lighthouse-role'), выкладываем созданные roles в соответствующих репозиториях.
+```
+aleksander@aleksander-MS-7641:~/lighthouse-role$ git tag -a 1.0.0 -m "v.1.0.0"
+aleksander@aleksander-MS-7641:~/lighthouse-role$ git push --set-upstream origin master 1.0.0
+Перечисление объектов: 5, готово.
+Подсчет объектов: 100% (5/5), готово.
+При сжатии изменений используется до 4 потоков
+Сжатие объектов: 100% (3/3), готово.
+Запись объектов: 100% (3/3), 308 байтов | 102.00 КиБ/с, готово.
+Всего 3 (изменений 2), повторно использовано 0 (изменений 0), повторно использовано пакетов 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/anfilippov7/lighthouse-role.git
+   203b489..2eedbdb  master -> master
+    * [new tag]         1.0.0 -> 1.0.0
+
+```
+
+```
+aleksander@aleksander-MS-7641:~/vector-role$ git tag -a 1.0.0 -m "v.1.0.0"
+aleksander@aleksander-MS-7641:~/vector-role$ git push --set-upstream origin master 1.0.0
+Перечисление объектов: 19, готово.
+Подсчет объектов: 100% (19/19), готово.
+При сжатии изменений используется до 4 потоков
+Сжатие объектов: 100% (10/10), готово.
+Запись объектов: 100% (19/19), 2.84 КиБ | 364.00 КиБ/с, готово.
+Всего 19 (изменений 0), повторно использовано 0 (изменений 0), повторно использовано пакетов 0
+To https://github.com/anfilippov7/vector-role.git
+ * [new branch]      master -> master
+ * [new tag]         1.0.0 -> 1.0.0
+Ветка «master» отслеживает внешнюю ветку «master» из «origin».
+
+```
+Добавляем roles в `requirements.yml` в playbook:
+```
+---
+- name: clickhouse
+  src: git@github.com:AlexeySetevoi/ansible-clickhouse.git
+  scm: git
+  version: "1.13"
+
+- name: vector
+  src: git@github.com/anfilippov7/vector-role.git
+  scm: git
+  version: "1.0.0"
+
+- name: lighthouse
+  src: git@github.com/anfilippov7/lighthouse-role.git
+  scm: git
+  version: "1.0.0"
+```
+
+
+
+
+
 ---
 
 ### Как оформить решение задания
