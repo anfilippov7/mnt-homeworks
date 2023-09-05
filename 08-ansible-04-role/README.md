@@ -633,8 +633,12 @@ http {
 <p align="center">
   <img width="1200" height="600" src="./image/task5.png">
 </p> 
- 
- 
+
+ - lighthouse:
+ <p align="center">
+  <img width="1200" height="600" src="./image/task6.png">
+</p> 
+
 ---
 
 ### Как оформить решение задания
