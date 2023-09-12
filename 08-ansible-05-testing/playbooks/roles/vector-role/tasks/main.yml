@@ -1,0 +1,8 @@
+---
+- name: Install vector for centos8
+  import_tasks: centos8.yml
+#  when: platforms['name'] == 'centos8'
+
+# - name: Install vector for ubuntu
+#   import_tasks: ubuntu.yml
+#  when: platforms['name'] == 'ubuntu'
