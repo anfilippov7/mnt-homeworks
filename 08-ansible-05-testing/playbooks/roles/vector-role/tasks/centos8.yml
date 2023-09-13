@@ -20,10 +20,3 @@
         mode: "0755"
         owner: "{{ ansible_user_id }}"
         group: "{{ ansible_user_gid }}"
-
-    #    - name: Vector | Start Service
-    #      become: true
-    #      ansible.builtin.systemd:
-    #        name: vector
-    #        state: started
-    #        daemon_reload: true

@@ -1,6 +1,6 @@
 ---
 - name: Converge
-  hosts: centos8
+  hosts: all
   tasks:
     - name: "Include vector-role"
       include_role:

@@ -1,8 +1,8 @@
 ---
 - name: Install vector for centos8
   import_tasks: centos8.yml
-#  when: platforms['name'] == 'centos8'
+  when: ansible_facts['os_family'] == "RedHat"
 
-# - name: Install vector for ubuntu
-#   import_tasks: ubuntu.yml
-#  when: platforms['name'] == 'ubuntu'
+- name: Install vector for ubuntu
+  import_tasks: ubuntu.yml
+  when: ansible_facts['os_family'] == "Debian"

@@ -1,17 +1,15 @@
 ---
 - block:
-# - name: Get vector distrib
-#   become: true
-#   ansible.builtin.get_url:
-#     url: https://packages.timber.io/vector/0.32.1/vector_0.32.1-1_amd64.deb
-#     dest: ./vector_0.32.1-1_amd64.deb
-#     mode: 0755
+  # - name: Get vector distrib
+  #   become: true
+  #   ansible.builtin.get_url:
+  #     url: https://packages.timber.io/vector/{{ vector_version }}/vector_{{ vector_version }}-1_amd64.deb
+  #     dest: ./vector_{{ vector_version }}_amd64.deb
+  #     mode: 0755
   - name: Install vector deb
     become: true
-    # ansible.builtin.command:
-    #   cmd: sudo dpkg -i vector_0.32.1-1_amd64.deb
     ansible.builtin.apt:
-      deb: https://packages.timber.io/vector/0.32.1/vector_0.32.1-1_amd64.deb
+      deb:  https://packages.timber.io/vector/{{ vector_version }}/vector_{{ vector_version }}-1_amd64.deb
       update_cache: yes
       state: present
   - name: Vector | Template Config

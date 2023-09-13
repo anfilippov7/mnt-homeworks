@@ -1,7 +1,7 @@
 ---
 # This is an example playbook to execute Ansible tests.
 - name: Verify
-  hosts: centos8
+  hosts: all
   gather_facts: false
   vars:
     vector_config_path: /etc/vector/vector.yaml
