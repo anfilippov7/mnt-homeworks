@@ -229,8 +229,629 @@ Downloading https://galaxy.ansible.com/download/community-docker-2.7.6.tar.gz to
 Installing 'community.docker:2.7.6' to '/home/aleksander/.ansible/collections/ansible_collections/community/docker'
 community.docker:2.7.6 was installed successfully
 ```
+ - в файле molecule.yml прописываем код для создания инстансов:
+```
+ ---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  ansible-lint .
+  yamllint .
+platforms:
+  - name: centos8
+    image: quay.io/centos/centos:stream8
+    pre_build_image: true
+  - name: ubuntu
+    image: docker.io/pycontribs/ubuntu:latest
+    pre_build_image: true
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
+```
 
+ - в папке tasks создаем файлы ubuntu.yml, centos8.yml, main.yml и прописываем следующий код для установки инстансов, соответственно:
+```
+ ---
+- block:
+    - name: Install Vector
+      ansible.builtin.dnf:
+        disable_gpg_check: true
+        name: "{{ vector_url }}"
+        state: present
+    - name: Vector | Template Config
+      ansible.builtin.template:
+        src: templates/vector.yml.j2
+        dest: /etc/vector/vector.yaml
+        mode: "0644"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
+        validate: vector validate --no-environment --config-yaml %s
+    - name: Vector | Create systemd unit
+      ansible.builtin.template:
+        src: templates/vector.service.j2
+        dest: /etc/systemd/vector.service
+        mode: "0755"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
+```
 
+```
+---
+- block:
+  - name: Install vector deb
+    become: true
+    ansible.builtin.apt:
+      deb:  https://packages.timber.io/vector/{{ vector_version }}/vector_{{ vector_version }}-1_amd64.deb
+      update_cache: yes
+      state: present
+  - name: Vector | Template Config
+    ansible.builtin.template:
+      src: templates/vector.yml.j2
+      dest: /etc/vector/vector.yaml
+      mode: "0644"
+      owner: "{{ ansible_user_id }}"
+      group: "{{ ansible_user_gid }}"
+      validate: vector validate --no-environment --config-yaml %s
+  - name: Vector | Create systemd unit
+    ansible.builtin.template:
+      src: templates/vector.service.j2
+      dest: /etc/systemd/vector.service
+      mode: "0755"
+      owner: "{{ ansible_user_id }}"
+      group: "{{ ansible_user_gid }}"
+```
+
+```
+---
+- name: Install vector for centos8
+  import_tasks: centos8.yml
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Install vector for ubuntu
+  import_tasks: ubuntu.yml
+  when: ansible_facts['os_family'] == "Debian"
+```
+
+ - выполняем команду ***molecule test***, тест прошел успешно:
+```
+aleksander@aleksander-System-Product-Name:~/mnt-homeworks/08-ansible-05-testing/playbooks/roles/vector-role$ molecule test
+INFO     default scenario test matrix: dependency, lint, cleanup, destroy, syntax, create, prepare, converge, idempotence, side_effect, verify, cleanup, destroy
+INFO     Performing prerun...
+INFO     Set ANSIBLE_LIBRARY=/home/aleksander/.cache/ansible-compat/f5bcd7/modules:/home/aleksander/.ansible/plugins/modules:/usr/share/ansible/plugins/modules
+INFO     Set ANSIBLE_COLLECTIONS_PATH=/home/aleksander/.cache/ansible-compat/f5bcd7/collections:/home/aleksander/.ansible/collections:/usr/share/ansible/collections
+INFO     Set ANSIBLE_ROLES_PATH=/home/aleksander/.cache/ansible-compat/f5bcd7/roles:/home/aleksander/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
+INFO     Running default > dependency
+WARNING  Skipping, missing the requirements file.
+WARNING  Skipping, missing the requirements file.
+INFO     Running default > lint
+COMMAND: ansible-lint .
+yamllint .
+
+ERROR    Computed fully qualified role name of vector-role does not follow current galaxy requirements.
+Please edit meta/main.yml and assure we can correctly determine full role name:
+
+galaxy_info:
+role_name: my_name  # if absent directory name hosting role is used instead
+namespace: my_galaxy_namespace  # if absent, author is used instead
+
+Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+Computed fully qualified role name of vector-role does not follow current galaxy requirements.
+Please edit meta/main.yml and assure we can correctly determine full role name:
+
+galaxy_info:
+role_name: my_name  # if absent directory name hosting role is used instead
+namespace: my_galaxy_namespace  # if absent, author is used instead
+
+Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+INFO     Running default > cleanup
+WARNING  Skipping, cleanup playbook not configured.
+INFO     Running default > destroy
+INFO     Sanity checks: 'docker'
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Set async_dir for HOME env] **********************************************
+ok: [localhost]
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item=centos8)
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+ok: [localhost] => (item=centos8)
+ok: [localhost] => (item=ubuntu)
+
+TASK [Delete docker networks(s)] ***********************************************
+skipping: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+INFO     Running default > syntax
+
+playbook: /home/aleksander/mnt-homeworks/08-ansible-05-testing/playbooks/roles/vector-role/molecule/default/converge.yml
+INFO     Running default > create
+
+PLAY [Create] ******************************************************************
+
+TASK [Set async_dir for HOME env] **********************************************
+ok: [localhost]
+
+TASK [Log into a Docker registry] **********************************************
+skipping: [localhost] => (item=None) 
+skipping: [localhost] => (item=None) 
+skipping: [localhost]
+
+TASK [Check presence of custom Dockerfiles] ************************************
+ok: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True})
+ok: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Create Dockerfiles from image names] *************************************
+skipping: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}) 
+skipping: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}) 
+skipping: [localhost]
+
+TASK [Synchronization the context] *********************************************
+skipping: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}) 
+skipping: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}) 
+skipping: [localhost]
+
+TASK [Discover local Docker images] ********************************************
+ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'false_condition': 'not item.pre_build_image | default(false)', 'item': {'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'false_condition': 'not item.pre_build_image | default(false)', 'item': {'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 1, 'ansible_index_var': 'i'})
+
+TASK [Build an Ansible compatible image (new)] *********************************
+skipping: [localhost] => (item=molecule_local/quay.io/centos/centos:stream8) 
+skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/ubuntu:latest) 
+skipping: [localhost]
+
+TASK [Create docker network(s)] ************************************************
+skipping: [localhost]
+
+TASK [Determine the CMD directives] ********************************************
+ok: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True})
+ok: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Create molecule instance(s)] *********************************************
+changed: [localhost] => (item=centos8)
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) creation to complete] *******************************
+changed: [localhost] => (item={'failed': 0, 'started': 1, 'finished': 0, 'ansible_job_id': 'j871342857499.28696', 'results_file': '/home/aleksander/.ansible_async/j871342857499.28696', 'changed': True, 'item': {'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+FAILED - RETRYING: [localhost]: Wait for instance(s) creation to complete (300 retries left).
+changed: [localhost] => (item={'failed': 0, 'started': 1, 'finished': 0, 'ansible_job_id': 'j84753133139.28741', 'results_file': '/home/aleksander/.ansible_async/j84753133139.28741', 'changed': True, 'item': {'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=6    changed=2    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
+
+INFO     Running default > prepare
+WARNING  Skipping, prepare playbook not configured.
+INFO     Running default > converge
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+ok: [centos8]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Install Vector] ********************************************
+skipping: [ubuntu]
+changed: [centos8]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [ubuntu]
+changed: [centos8]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [ubuntu]
+changed: [centos8]
+
+TASK [vector-role : Install vector deb] ****************************************
+skipping: [centos8]
+changed: [ubuntu]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [centos8]
+changed: [ubuntu]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [centos8]
+changed: [ubuntu]
+
+PLAY RECAP *********************************************************************
+centos8                    : ok=4    changed=3    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+ubuntu                     : ok=4    changed=3    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Running default > idempotence
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+ok: [centos8]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Install Vector] ********************************************
+skipping: [ubuntu]
+ok: [centos8]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [ubuntu]
+ok: [centos8]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [ubuntu]
+ok: [centos8]
+
+TASK [vector-role : Install vector deb] ****************************************
+skipping: [centos8]
+ok: [ubuntu]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [centos8]
+ok: [ubuntu]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [centos8]
+ok: [ubuntu]
+
+PLAY RECAP *********************************************************************
+centos8                    : ok=4    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+ubuntu                     : ok=4    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Idempotence completed successfully.
+INFO     Running default > side_effect
+WARNING  Skipping, side effect playbook not configured.
+INFO     Running default > verify
+INFO     Running Ansible Verifier
+
+PLAY [Verify] ******************************************************************
+
+TASK [Example assertion] *******************************************************
+ok: [centos8] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+ok: [ubuntu] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+PLAY RECAP *********************************************************************
+centos8                    : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ubuntu                     : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+INFO     Verifier completed successfully.
+INFO     Running default > cleanup
+WARNING  Skipping, cleanup playbook not configured.
+INFO     Running default > destroy
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Set async_dir for HOME env] **********************************************
+ok: [localhost]
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item=centos8)
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+changed: [localhost] => (item=centos8)
+FAILED - RETRYING: [localhost]: Wait for instance(s) deletion to complete (300 retries left).
+changed: [localhost] => (item=ubuntu)
+
+TASK [Delete docker networks(s)] ***********************************************
+skipping: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+INFO     Pruning extra files from scenario ephemeral directory
+```
+4. Добавляем в файл verify.yml проверку работоспособности vector-role (проверку версии и проверку что конфиг валидный)
+```
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+    vector_config_path: /etc/vector/vector.yaml
+  tasks:
+    - name: Get Vector version
+      ansible.builtin.command: "vector --version"
+      changed_when: false
+      register: vector_version
+    - name: Assert Vector instalation
+      assert:
+        that: "'{{ vector_version.rc }}' == '0'"
+
+    - name: Validation Vector configuration
+      ansible.builtin.command: "vector validate --no-environment --config-yaml {{ vector_config_path }}"
+      changed_when: false
+      register: vector_validate
+    - name: Assert Vector validate config
+      assert:
+        that: "'{{ vector_validate.rc }}' == '0'"
+```
+
+ - выполняем команду ***molecule test***, тест прошел успешно:
+```
+aleksander@aleksander-System-Product-Name:~/mnt-homeworks/08-ansible-05-testing/playbooks/roles/vector-role$ molecule test
+INFO     default scenario test matrix: dependency, lint, cleanup, destroy, syntax, create, prepare, converge, idempotence, side_effect, verify, cleanup, destroy
+INFO     Performing prerun...
+INFO     Set ANSIBLE_LIBRARY=/home/aleksander/.cache/ansible-compat/f5bcd7/modules:/home/aleksander/.ansible/plugins/modules:/usr/share/ansible/plugins/modules
+INFO     Set ANSIBLE_COLLECTIONS_PATH=/home/aleksander/.cache/ansible-compat/f5bcd7/collections:/home/aleksander/.ansible/collections:/usr/share/ansible/collections
+INFO     Set ANSIBLE_ROLES_PATH=/home/aleksander/.cache/ansible-compat/f5bcd7/roles:/home/aleksander/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
+INFO     Running default > dependency
+WARNING  Skipping, missing the requirements file.
+WARNING  Skipping, missing the requirements file.
+INFO     Running default > lint
+COMMAND: ansible-lint .
+yamllint .
+
+ERROR    Computed fully qualified role name of vector-role does not follow current galaxy requirements.
+Please edit meta/main.yml and assure we can correctly determine full role name:
+
+galaxy_info:
+role_name: my_name  # if absent directory name hosting role is used instead
+namespace: my_galaxy_namespace  # if absent, author is used instead
+
+Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+Computed fully qualified role name of vector-role does not follow current galaxy requirements.
+Please edit meta/main.yml and assure we can correctly determine full role name:
+
+galaxy_info:
+role_name: my_name  # if absent directory name hosting role is used instead
+namespace: my_galaxy_namespace  # if absent, author is used instead
+
+Namespace: https://galaxy.ansible.com/docs/contributing/namespaces.html#galaxy-namespace-limitations
+Role: https://galaxy.ansible.com/docs/contributing/creating_role.html#role-names
+
+As an alternative, you can add 'role-name' to either skip_list or warn_list.
+
+INFO     Running default > cleanup
+WARNING  Skipping, cleanup playbook not configured.
+INFO     Running default > destroy
+INFO     Sanity checks: 'docker'
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Set async_dir for HOME env] **********************************************
+ok: [localhost]
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item=centos8)
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+ok: [localhost] => (item=centos8)
+ok: [localhost] => (item=ubuntu)
+
+TASK [Delete docker networks(s)] ***********************************************
+skipping: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+INFO     Running default > syntax
+
+playbook: /home/aleksander/mnt-homeworks/08-ansible-05-testing/playbooks/roles/vector-role/molecule/default/converge.yml
+INFO     Running default > create
+
+PLAY [Create] ******************************************************************
+
+TASK [Set async_dir for HOME env] **********************************************
+ok: [localhost]
+
+TASK [Log into a Docker registry] **********************************************
+skipping: [localhost] => (item=None) 
+skipping: [localhost] => (item=None) 
+skipping: [localhost]
+
+TASK [Check presence of custom Dockerfiles] ************************************
+ok: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True})
+ok: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Create Dockerfiles from image names] *************************************
+skipping: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}) 
+skipping: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}) 
+skipping: [localhost]
+
+TASK [Synchronization the context] *********************************************
+skipping: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}) 
+skipping: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}) 
+skipping: [localhost]
+
+TASK [Discover local Docker images] ********************************************
+ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'false_condition': 'not item.pre_build_image | default(false)', 'item': {'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
+ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'false_condition': 'not item.pre_build_image | default(false)', 'item': {'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 1, 'ansible_index_var': 'i'})
+
+TASK [Build an Ansible compatible image (new)] *********************************
+skipping: [localhost] => (item=molecule_local/quay.io/centos/centos:stream8) 
+skipping: [localhost] => (item=molecule_local/docker.io/pycontribs/ubuntu:latest) 
+skipping: [localhost]
+
+TASK [Create docker network(s)] ************************************************
+skipping: [localhost]
+
+TASK [Determine the CMD directives] ********************************************
+ok: [localhost] => (item={'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True})
+ok: [localhost] => (item={'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Create molecule instance(s)] *********************************************
+changed: [localhost] => (item=centos8)
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) creation to complete] *******************************
+changed: [localhost] => (item={'failed': 0, 'started': 1, 'finished': 0, 'ansible_job_id': 'j164192299331.38028', 'results_file': '/home/aleksander/.ansible_async/j164192299331.38028', 'changed': True, 'item': {'image': 'quay.io/centos/centos:stream8', 'name': 'centos8', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+FAILED - RETRYING: [localhost]: Wait for instance(s) creation to complete (300 retries left).
+changed: [localhost] => (item={'failed': 0, 'started': 1, 'finished': 0, 'ansible_job_id': 'j505301064948.38061', 'results_file': '/home/aleksander/.ansible_async/j505301064948.38061', 'changed': True, 'item': {'image': 'docker.io/pycontribs/ubuntu:latest', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=6    changed=2    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
+
+INFO     Running default > prepare
+WARNING  Skipping, prepare playbook not configured.
+INFO     Running default > converge
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+ok: [centos8]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Install Vector] ********************************************
+skipping: [ubuntu]
+changed: [centos8]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [ubuntu]
+changed: [centos8]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [ubuntu]
+changed: [centos8]
+
+TASK [vector-role : Install vector deb] ****************************************
+skipping: [centos8]
+changed: [ubuntu]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [centos8]
+changed: [ubuntu]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [centos8]
+changed: [ubuntu]
+
+PLAY RECAP *********************************************************************
+centos8                    : ok=4    changed=3    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+ubuntu                     : ok=4    changed=3    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Running default > idempotence
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+ok: [centos8]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Install Vector] ********************************************
+skipping: [ubuntu]
+ok: [centos8]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [ubuntu]
+ok: [centos8]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [ubuntu]
+ok: [centos8]
+
+TASK [vector-role : Install vector deb] ****************************************
+skipping: [centos8]
+ok: [ubuntu]
+
+TASK [vector-role : Vector | Template Config] **********************************
+skipping: [centos8]
+ok: [ubuntu]
+
+TASK [vector-role : Vector | Create systemd unit] ******************************
+skipping: [centos8]
+ok: [ubuntu]
+
+PLAY RECAP *********************************************************************
+centos8                    : ok=4    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+ubuntu                     : ok=4    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Idempotence completed successfully.
+INFO     Running default > side_effect
+WARNING  Skipping, side effect playbook not configured.
+INFO     Running default > verify
+INFO     Running Ansible Verifier
+
+PLAY [Verify] ******************************************************************
+
+TASK [Get Vector version] ******************************************************
+ok: [ubuntu]
+ok: [centos8]
+
+TASK [Assert Vector instalation] ***********************************************
+ok: [centos8] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+ok: [ubuntu] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [Validation Vector configuration] *****************************************
+ok: [ubuntu]
+ok: [centos8]
+
+TASK [Assert Vector validate config] *******************************************
+ok: [centos8] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+ok: [ubuntu] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+PLAY RECAP *********************************************************************
+centos8                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ubuntu                     : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+INFO     Verifier completed successfully.
+INFO     Running default > cleanup
+WARNING  Skipping, cleanup playbook not configured.
+INFO     Running default > destroy
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Set async_dir for HOME env] **********************************************
+ok: [localhost]
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item=centos8)
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+changed: [localhost] => (item=centos8)
+changed: [localhost] => (item=ubuntu)
+
+TASK [Delete docker networks(s)] ***********************************************
+skipping: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+INFO     Pruning extra files from scenario ephemeral directory
+```
+ 
 ---
 
 ### Как оформить решение задания
