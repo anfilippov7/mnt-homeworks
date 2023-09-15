@@ -2,6 +2,8 @@ galaxy_info:
   author: Aleksander Filippov
   description: This role install vector on EL
   company: netology
+  role_name: linux_administration
+  namespace: glennbell
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
