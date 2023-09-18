@@ -3,5 +3,5 @@
   hosts: all
   tasks:
     - name: "Include vector-role"
-      include_role:
+      ansible.builtin.include_role:
         name: "vector-role"

@@ -1,5 +1,6 @@
 ---
-- block:
+- name: Setup Vector Ubuntu
+  block:
   - name: Install vector deb
     become: true
     ansible.builtin.apt:

@@ -1,5 +1,6 @@
 ---
-- block:
+- name: Setup Vector CentOS
+  block:
     - name: Install Vector
       ansible.builtin.dnf:
         disable_gpg_check: true
