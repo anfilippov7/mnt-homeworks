@@ -98,6 +98,10 @@
   <img width="1200" height="600" src="./image/epic4.png">
 </p>
 
+10. Возвращаем задачи в статус Open.
+<p align="center">
+  <img width="1200" height="600" src="./image/back.png">
+</p>
 ---
 
 ### Как оформить решение задания
