@@ -36,6 +36,68 @@
 1. Перейдите в Scrum, запланируйте новый спринт, состоящий из задач эпика и одного бага, стартуйте спринт, проведите задачи до состояния Closed. Закройте спринт.
 2. Если всё отработалось в рамках ожидания — выгрузите схемы workflow для импорта в XML. Файлы с workflow и скриншоты workflow приложите к решению задания.
 
+## Решение
+
+1. Создаем board kanban и заполняем необходимые колонки для задач типа bugs
+<p align="center">
+  <img width="1200" height="600" src="./image/bugs_board.png">
+</p>
+
+2. Создаем workflow на основе ранее созданной board kanban для задач типа bugs и настраиваем необходимые переходы статусов
+<p align="center">
+  <img width="1200" height="600" src="./image/workflow_bugs.png">
+</p>
+
+3. Связываем новый workflow с типом проблемы (bugs)
+<p align="center">
+  <img width="1200" height="600" src="./image/workflow1.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/workflow2.png">
+</p>
+
+4. Создаем board kanban и заполняем необходимые колонки для остальных типов задач 
+<p align="center">
+  <img width="1200" height="600" src="./image/other_board.png">
+</p>
+
+5. Создаем workflow на основе ранее созданной board kanban для остальных типов задач и настраиваем необходимые переходы статусов
+<p align="center">
+  <img width="1200" height="600" src="./image/workflow_other.png">
+</p>
+
+6. Связываем новый workflow для остальных типов задач
+<p align="center">
+  <img width="1200" height="600" src="./image/workflow3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/workflow4.png">
+</p>
+
+7. Проверяем состав workflow для типов задач
+<p align="center">
+  <img width="1200" height="600" src="./image/workflow_all.png">
+</p>
+
+8. Создаем задачу с типом bug, и проводим ее по всему workflow до Done.
+<p align="center">
+  <img width="1200" height="600" src="./image/bug.png">
+</p>
+
+9. Создаем задачу с типом epic, привязываем к ней несколько задач с типом task, и проводим их по всему workflow до Done.
+<p align="center">
+  <img width="1200" height="600" src="./image/epic1.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/epic2.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/epic3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/epic4.png">
+</p>
+
 ---
 
 ### Как оформить решение задания
