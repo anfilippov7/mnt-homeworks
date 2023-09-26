@@ -102,6 +102,33 @@
 <p align="center">
   <img width="1200" height="600" src="./image/back.png">
 </p>
+
+11. Создаем Scrum board, начинаем новый спринт, состоящий из задач эпика и одного бага, стартуем спринт, проводим задачи до состояния Closed. 
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum1.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum2.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum4.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum5.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum6.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum7.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/scrum8.png">
+</p>
+
 ---
 
 ### Как оформить решение задания
