@@ -13,12 +13,12 @@
     </repository>
   </repositories>
   <dependencies>
-<!--     <dependency>
+    <dependency>
       <groupId>somegroup</groupId>
       <artifactId>someart</artifactId>
       <version>somevers</version>
       <classifier>someclass</classifier>
       <type>sometype</type>
-    </dependency> -->
+    </dependency>
   </dependencies>
 </project>
