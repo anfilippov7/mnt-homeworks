@@ -341,6 +341,7 @@ while (index < 10):
   <img width="1200" height="600" src="./image/nexus3.png">
 </p>
 4. Файл `maven-metadata.xml` для этого артефекта.
+
 ```
 <metadata modelVersion="1.1.0">
 <groupId>netology</groupId>
@@ -357,6 +358,7 @@ while (index < 10):
 </metadata>
 
 ```
+
 <p align="center">
   <img width="1200" height="600" src="./image/nexus4.png">
 </p>
