@@ -344,17 +344,17 @@ while (index < 10):
 
 ```
 <metadata modelVersion="1.1.0">
-<groupId>netology</groupId>
-<artifactId>pom</artifactId>
-<versioning>
-<latest>2.0.0</latest>
-<release>2.0.0</release>
-<versions>
-<version>1.0.0</version>
-<version>2.0.0</version>
-</versions>
-<lastUpdated>20230928151626</lastUpdated>
-</versioning>
+	<groupId>netology</groupId>
+	<artifactId>pom</artifactId>
+	<versioning>
+		<latest>2.0.0</latest>
+		<release>2.0.0</release>
+		<versions>
+			<version>1.0.0</version>
+			<version>2.0.0</version>
+		</versions>
+		<lastUpdated>20230928151626</lastUpdated>
+	</versioning>
 </metadata>
 
 ```
