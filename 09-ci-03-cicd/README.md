@@ -317,6 +317,49 @@ while (index < 10):
 </p>
 
 
+## Знакомство с Nexus
+
+### Основная часть
+
+1. В репозиторий `maven-public` загружаем артефакт с GAV-параметрами:
+
+ *    groupId: netology;
+ *    artifactId: java;
+ *    version: 8_282;
+ *    classifier: distrib;
+ *    type: tar.gz.
+
+<p align="center">
+  <img width="1200" height="600" src="./image/nexus1.png">
+</p> 
+2. В него же загружаем такой же артефакт, но с version: 8_102.
+<p align="center">
+  <img width="1200" height="600" src="./image/nexus2.png">
+</p>
+3. Проверяем, что все файлы загрузились успешно.
+<p align="center">
+  <img width="1200" height="600" src="./image/nexus3.png">
+</p>
+4. Файл `maven-metadata.xml` для этого артефекта.
+```
+<metadata modelVersion="1.1.0">
+<groupId>netology</groupId>
+<artifactId>pom</artifactId>
+<versioning>
+<latest>2.0.0</latest>
+<release>2.0.0</release>
+<versions>
+<version>1.0.0</version>
+<version>2.0.0</version>
+</versions>
+<lastUpdated>20230928151626</lastUpdated>
+</versioning>
+</metadata>
+
+```
+<p align="center">
+  <img width="1200" height="600" src="./image/nexus4.png">
+</p>
 
 
 ---
