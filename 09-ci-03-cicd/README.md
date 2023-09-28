@@ -119,13 +119,13 @@ all:
   <img width="1200" height="600" src="./image/netology_soft.png">
 </p>
 2. Скачиваем пакет sonar-scanner, который нам предлагает скачать SonarQube и выполняем его распаковку в директорию с ДЗ.
-Provide a token
-aleksander: 8dd27f82ad5d4621064fd85f1aeffec0f4d2d6d8
 <p align="center">
   <img width="1200" height="600" src="./image/sonar_dist.png">
 </p>
-3. Чтобы binary был доступен меняем переменную PATH ***$ export PATH=$(pwd):$PATH***.
+3. Чтобы binary был доступен меняем переменную PATH ***$ export PATH=$(pwd):$PATH***
+
 4. Проверяем `sonar-scanner --version`.
+
 ```
 aleksander@aleksander-MS-7641:~/mnt-homeworks/09-ci-03-cicd$ sonar-scanner --version
 INFO: Scanner configuration file: /home/aleksander/mnt-homeworks/09-ci-03-cicd/sonar-scanner-5.0.1.3006-linux/conf/sonar-scanner.properties
@@ -134,7 +134,9 @@ INFO: SonarScanner 5.0.1.3006
 INFO: Java 17.0.7 Eclipse Adoptium (64-bit)
 INFO: Linux 6.2.0-33-generic amd64
 ```
+
 5. Запускаем анализатор против кода из директории [example](./example) с дополнительным ключом `-Dsonar.coverage.exclusions=fail.py`.
+
 ```
 aleksander@aleksander-MS-7641:~/mnt-homeworks/09-ci-03-cicd$ sonar-scanner   -Dsonar.projectKey=netology-soft   -Dsonar.sources=.   -Dsonar.host.url=http://51.250.79.214:9000   -Dsonar.login=8dd27f82ad5d4621064fd85f1aeffec0f4d2d6d8  -Dsonar.coverage.exclusions=fail.py
 INFO: Scanner configuration file: /home/aleksander/mnt-homeworks/09-ci-03-cicd/sonar-scanner-5.0.1.3006-linux/conf/sonar-scanner.properties
@@ -242,6 +244,7 @@ INFO: Total time: 26.992s
 INFO: Final Memory: 18M/74M
 INFO: ------------------------------------------------------------------------
 ```
+
 6. Cмотрим результат в интерфейсе.
  Были найдены:
  - 2 бага (bugs)
@@ -263,6 +266,7 @@ INFO: ------------------------------------------------------------------------
 </p>
 7. Исправяем ошибки, которые он выявил, включая warnings.
  - fail.py
+ 
 ```
 def increment(index = 0):
     index += 1
@@ -279,6 +283,7 @@ while (index < 10):
 ```
 
  - pom.xml
+ 
 ```
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
