@@ -29,4 +29,30 @@
 
 Выполненное домашнее задание пришлите в виде ссылки на .md-файл в вашем репозитории.
 
+## Решение
+
+## Подготовка к выполнению
+
+1. Создаем две VM: для jenkins-master и jenkins-agent
+<p align="center">
+  <img width="1200" height="600" src="./image/vm.png">
+</p>
+2. Устанавливаем Jenkins при помощи playbook, команды ***ansible-playbook -i inventory/cicd/hosts.yml site.yml***.
+<p align="center">
+  <img width="1200" height="600" src="./image/ansible.png">
+</p>
+3. Запускаем и проверяем работоспособность.
+<p align="center">
+  <img width="1200" height="600" src="./image/start.png">
+</p>
+4. Делаем первоначальную настройку.
+ - получаем пароль 
+<p align="center">
+  <img width="1200" height="600" src="./image/pass.png">
+</p>
+ - вводим полученный пароль в поле и выполняем начальную настройку
+<p align="center">
+  <img width="1200" height="600" src="./image/welcome.png">
+</p>
+
 ---
