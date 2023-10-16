@@ -51,21 +51,55 @@
   <img width="1200" height="600" src="./image/pass.png">
 </p>
  - вводим полученный пароль в поле и выполняем начальную настройку
+ - добавляем публичный ключ в authorized_key на ноде agent, изменяем права у authorized_key, читаем и копируем закрытый ключ для дальнейшей вставки его в jenkins
+
+```
+aleksander@aleksander-MS-7641:~$ ssh jenkins@158.160.75.194
+[jenkins@jenkins-agent ~]$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+[jenkins@jenkins-agent ~]$ chmod 600 ~/.ssh/authorized_keys
+[jenkins@jenkins-agent ~]$ cat ~/.ssh/id_rsa
+```
+
 <p align="center">
-  <img width="1200" height="600" src="./image/welcome.png">
+  <img width="1200" height="600" src="./image/welcome1.png">
 </p>
 <p align="center">
-  <img width="1200" height="600" src="./image/master.png">
+  <img width="1200" height="600" src="./image/welcome2.png">
 </p>
 <p align="center">
-  <img width="1200" height="600" src="./image/agent.png">
+  <img width="1200" height="600" src="./image/welcome3.png">
 </p>
 
 ## Основная часть
 
 1. Делаем Freestyle Job, которая будет запускать `molecule test` из репозитория с ролью.
-cd playbooks/roles/vector-role
-molecule test
+<p align="center">
+  <img width="1200" height="600" src="./image/task1.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/task2.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/task3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/task4.png">
+</p>
+
+ - выполняем запуск сборки, сборка №5 прошла успешно
+<p align="center">
+  <img width="1200" height="600" src="./image/task5.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/task6.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/task7.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/task8.png">
+</p>
+ 
 2. Сделать Declarative Pipeline Job, который будет запускать `molecule test` из любого вашего репозитория с ролью.
 3. Перенести Declarative Pipeline в репозиторий в файл `Jenkinsfile`.
 4. Создать Multibranch Pipeline на запуск `Jenkinsfile` из репозитория.
