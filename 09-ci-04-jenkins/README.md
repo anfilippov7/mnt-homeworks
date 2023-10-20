@@ -185,7 +185,49 @@ node("ansible"){
 </p>
 
 6. Внести необходимые изменения, чтобы Pipeline запускал `ansible-playbook` без флагов `--check --diff`, если не установлен параметр при запуске джобы (prod_run = True). По умолчанию параметр имеет значение False и запускает прогон с флагами `--check --diff`.
-7. Проверить работоспособность, исправить ошибки, исправленный Pipeline вложить в репозиторий в файл `ScriptedJenkinsfile`.
+
+ - в настройках Pipeline ставим флажек ***параметризированная сборка***
+ - создаем ***Boolean Parameter*** ***prod_run***
+<p align="center">
+  <img width="1200" height="600" src="./image/param.png">
+</p>
+ - редактируем скрипт
+
+```
+node("ansible"){
+    stage("Git checkout"){
+        git url: 'https://github.com/aragastmatb/example-playbook.git'
+    }
+    stage("Sample define secret_check"){
+        secret_check="$prod_run"
+    }
+    stage("Run playbook"){
+        if (secret_check=="true") {
+            sh 'ansible-playbook site.yml -i inventory/prod.yml'
+        }
+        else{
+            sh 'ansible-playbook site.yml -i inventory/prod.yml --check --diff'
+        }
+        
+    }
+}
+```
+
+7. Проверяем работоспособность, исправляем ошибки, исправленный Pipeline выкладываем в репозиторий в файл `ScriptedJenkinsfile`.
+ - выполняем Pipeline без флага ***prod_run*** (prod_run = false)
+<p align="center">
+  <img width="1200" height="600" src="./image/param2.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/param3.png">
+</p>
+ - выполняем Pipeline c флагом ***prod_run*** (prod_run = true)
+<p align="center">
+  <img width="1200" height="600" src="./image/param4.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/param5.png">
+</p>
 8. Отправить ссылку на репозиторий с ролью и Declarative Pipeline и Scripted Pipeline.
 
 
