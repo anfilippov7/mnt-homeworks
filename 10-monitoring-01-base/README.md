@@ -217,6 +217,8 @@ aleksander@aleksander-MS-7641:~/mnt-homeworks/10-monitoring-01-base$ sudo chmod 
 ```
 
 Пример файла логирования 'YY-MM-DD-awesome-monitoring.log' добавил в директорию с домашним заданием
+
+
 ---
 
 ### Как оформить решение задания
