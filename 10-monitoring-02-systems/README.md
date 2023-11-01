@@ -283,6 +283,24 @@ FFmpeg version is too old. Need:
     - В `measurments` выберите cpu->host->telegraf-getting-started, а в `fields` выберите usage_system. Внизу появится график утилизации cpu.
     - Вверху вы можете увидеть запрос, аналогичный SQL-синтаксису. Поэкспериментируйте с запросом, попробуйте изменить группировку и интервал наблюдений.
 
+## Решение задание 8
+
+ - переходим в веб-интерфейс Chronograf (http://localhost:8888) и открываем вкладку explorer
+ - в `measurments` выберите cpu->host->telegraf-getting-started, а в `fields` выбераем usage_system, вверху появляется график утилизации cpu
+<p align="center">
+  <img width="1200" height="600" src="./image/telegraf1.png">
+</p>
+ - в настройках запроса изменяем группировку и интервал наблюдений
+<p align="center">
+  <img width="1200" height="600" src="./image/telegraf2.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/telegraf3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/telegraf4.png">
+</p>
+
 Для выполнения задания приведите скриншот с отображением метрик утилизации cpu из веб-интерфейса.
 #
 9. Изучите список [telegraf inputs](https://github.com/influxdata/telegraf/tree/master/plugins/inputs). 
