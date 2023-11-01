@@ -301,8 +301,7 @@ FFmpeg version is too old. Need:
   <img width="1200" height="600" src="./image/telegraf4.png">
 </p>
 
-Для выполнения задания приведите скриншот с отображением метрик утилизации cpu из веб-интерфейса.
-#
+
 9. Изучите список [telegraf inputs](https://github.com/influxdata/telegraf/tree/master/plugins/inputs). 
 Добавьте в конфигурацию telegraf следующий плагин - [docker](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/docker):
 ```
@@ -327,10 +326,63 @@ FFmpeg version is too old. Need:
       - "8125:8125/udp"
 ```
 
-После настройке перезапустите telegraf, обновите веб интерфейс и приведите скриншотом список `measurments` в 
-веб-интерфейсе базы telegraf.autogen . Там должны появиться метрики, связанные с docker.
 
-Факультативно можете изучить какие метрики собирает telegraf после выполнения данного задания.
+## Решение задание 9
+
+ - определяем сокет контейнера докер с помощью команды ***stat -c '%g' /var/run/docker.sock***
+ 
+```
+aleksander@aleksander-MS-7641:~/sandbox$ stat -c '%g' /var/run/docker.sock
+137
+
+```
+ 
+ - редактируем файл `docker-compose.yml`, блок telegraf, в том числе открываем доступ к 137 порту с помощью строки ***user: telegraf:137***
+ 
+```
+  telegraf:
+    # Full tag list: https://hub.docker.com/r/library/telegraf/tags/
+    build:
+      context: ./images/telegraf/
+      dockerfile: ./${TYPE}/Dockerfile
+      args:
+        TELEGRAF_TAG: ${TELEGRAF_TAG}
+    image: "telegraf"
+    privileged: true
+    user: telegraf:137
+    environment:
+      HOSTNAME: "telegraf-getting-started"
+    # Telegraf requires network access to InfluxDB
+    links:
+      - influxdb
+    volumes:
+      # Mount for telegraf configuration
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:Z
+      # Mount for Docker API access
+      - /var/run/docker.sock:/var/run/docker.sock:Z
+    depends_on:
+      - influxdb
+    ports:
+      - "8092:8092/udp"
+      - "8094:8094"
+      - "8125:8125/udp"
+
+```
+ -  редактируем файл telegraf.conf, добавляем блок 
+
+```
+[[inputs.docker]]
+  endpoint = "unix:///var/run/docker.sock"
+  container_names = []
+  timeout = "5s"
+  perdevice = true
+  total = false
+```
+ - перезапускаем telegraf, обновляем веб интерфейс веб-интерфейсе базы telegraf.autogen появились метрики, связанные с docker.
+<p align="center">
+  <img width="1200" height="600" src="./image/docker.png">
+</p>
+
 
 ## Дополнительное задание (со звездочкой*) - необязательно к выполнению
 
