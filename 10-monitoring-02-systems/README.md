@@ -575,7 +575,7 @@ aleksander@aleksander-MS-7641:~/mnt-homeworks/10-monitoring-01-base$ sudo chmod 
     - ...
     - фантазируйте)
 
- - создать свой dashboard, для отображения выбираем период 1 час
+ - создаем свой dashboard, для отображения выбираем период 1 час
 
 <p align="center">
   <img width="1200" height="600" src="./image/dashboard.png">
