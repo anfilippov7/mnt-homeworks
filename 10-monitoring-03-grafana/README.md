@@ -26,6 +26,36 @@
 1. Подключите поднятый вами prometheus, как источник данных.
 1. Решение домашнего задания — скриншот веб-интерфейса grafana со списком подключенных Datasource.
 
+
+### Решение 1
+
+ - в директории [help](./help) запускаем команду ***docker-compose up -d***
+ - смотрим запущенные контейнеры
+```
+aleksander@aleksander-MS-7641:~/mnt-homeworks/10-monitoring-03-grafana/help$ docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED              STATUS          PORTS                                       NAMES
+d7c692c61205   grafana/grafana:7.4.0       "/run.sh"                About a minute ago   Up 18 seconds   0.0.0.0:3000->3000/tcp, :::3000->3000/tcp   grafana
+0c3c6ea4b799   prom/prometheus:v2.24.1     "/bin/prometheus --c…"   About a minute ago   Up 19 seconds   9090/tcp                                    prometheus
+0a71ae2f6703   prom/node-exporter:v1.0.1   "/bin/node_exporter …"   About a minute ago   Up 19 seconds   9100/tcp                                    nodeexporter
+```
+ - заходим в веб-интерфейс grafana по адресу 0.0.0.0:3000->3000, вводим авторизационные данные, указанные в манифесте docker-compose
+<p align="center">
+  <img width="1200" height="600" src="./image/grafana.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/grafana2.png">
+</p>
+ - подключаяем поднятый prometheus, как источник данных, прописываем адрес ***http://prometheus:9090***
+<p align="center">
+  <img width="1200" height="600" src="./image/grafana3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/grafana4.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/grafana5.png">
+</p>
+
 ## Задание 2
 
 Изучите самостоятельно ресурсы:
@@ -42,6 +72,48 @@
 - количество места на файловой системе.
 
 Для решения этого задания приведите promql-запросы для выдачи этих метрик, а также скриншот получившейся Dashboard.
+
+### Решение 2
+
+Создаем Dashboard и в ней создаем Panels:
+ - утилизация CPU для nodeexporter (в процентах, 100-idle), запрос для выполнения:
+```
+avg without (cpu)(irate(node_cpu_seconds_total{job="nodeexporter",mode="idle"}[1m]))
+```
+<p align="center">
+  <img width="1200" height="600" src="./image/cpu.png">
+</p>
+ - CPULA 1/5/15, запрос для выполнения:
+
+```
+node_load1{job="nodeexporter"}
+node_load5{job="nodeexporter"}
+node_load15{job="nodeexporter"}
+```
+<p align="center">
+  <img width="1200" height="600" src="./image/cpu_la.png">
+</p>
+
+ - количество свободной оперативной памяти, запрос для выполнения:
+```
+node_memory_MemFree_bytes{job='nodeexporter'}
+```
+<p align="center">
+  <img width="1200" height="600" src="./image/mem.png">
+</p>
+
+ - количество места на файловой системе, запрос для выполнения:
+```
+node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}
+```
+<p align="center">
+  <img width="1200" height="600" src="./image/file.png">
+</p>
+
+ В результате получаем следующий Dashboard:
+<p align="center">
+  <img width="1200" height="600" src="./image/over.png">
+</p> 
 
 ## Задание 3
 
