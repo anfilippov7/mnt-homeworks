@@ -27,7 +27,7 @@
 1. Решение домашнего задания — скриншот веб-интерфейса grafana со списком подключенных Datasource.
 
 
-### Решение 1
+## Решение 1
 
  - в директории [help](./help) запускаем команду ***docker-compose up -d***
  - смотрим запущенные контейнеры
@@ -73,7 +73,7 @@ d7c692c61205   grafana/grafana:7.4.0       "/run.sh"                About a minu
 
 Для решения этого задания приведите promql-запросы для выдачи этих метрик, а также скриншот получившейся Dashboard.
 
-### Решение 2
+## Решение 2
 
 Создаем Dashboard и в ней создаем Panels:
  - утилизация CPU для nodeexporter (в процентах, 100-idle), запрос для выполнения:
@@ -120,6 +120,37 @@ node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}
 1. Создайте для каждой Dashboard подходящее правило alert — можно обратиться к первой лекции в блоке «Мониторинг».
 1. В качестве решения задания приведите скриншот вашей итоговой Dashboard.
 
+## Решение 3
+
+ - Создаем для каждой Dashboard подходящее правило alert
+ - В качестве канала оповещения используем e-mail
+<p align="center">
+  <img width="1200" height="600" src="./image/alert_mail.png">
+</p> 
+ - Создаем alert для утилизации CPU
+<p align="center">
+  <img width="1200" height="600" src="./image/alert_cpu.png">
+</p>
+ - Создаем alert для CPULA 1/5/15
+<p align="center">
+  <img width="1200" height="600" src="./image/alert_cpula.png">
+</p>
+ - Cоздаем alert для количества свободной оперативной памяти
+<p align="center">
+  <img width="1200" height="600" src="./image/alert_mem.png">
+</p>
+ - Cоздаем alert для количества места на файловой системе
+<p align="center">
+  <img width="1200" height="600" src="./image/alert_disk.png">
+</p>
+
+ - скриншоты итоговой Dashboard и созданных alert
+<p align="center">
+  <img width="1200" height="600" src="./image/alert_dash.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/alert_over.png">
+</p>
 ## Задание 4
 
 1. Сохраните ваш Dashboard.Для этого перейдите в настройки Dashboard, выберите в боковом меню «JSON MODEL». Далее скопируйте отображаемое json-содержимое в отдельный файл и сохраните его.
