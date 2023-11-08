@@ -44,6 +44,23 @@ Filebeat следует сконфигурировать для отправки
 - docker-compose манифест (если вы не использовали директорию help);
 - ваши yml-конфигурации для стека (если вы не использовали директорию help).
 
+## Решение 1
+
+ - Выполняем команду:
+```
+aleksander@aleksander-MS-7641:~/mnt-homeworks/10-monitoring-04-elk/help$ sudo sysctl -w vm.max_map_count=262144
+[sudo] пароль для aleksander: 
+vm.max_map_count = 262144
+```
+ - Запускаем сборку контейнеров ***docker-compose up -d***, запускаем docker ps, результат выполнения:
+<p align="center">
+  <img width="1200" height="600" src="./image/kibana.png">
+</p>
+ - Cкриншот интерфейса kibana:
+<p align="center">
+  <img width="1200" height="600" src="./image/kibana2.png">
+</p>
+
 ## Задание 2
 
 Перейдите в меню [создания index-patterns  в kibana](http://localhost:5601/app/management/kibana/indexPatterns/create) и создайте несколько index-patterns из имеющихся.
@@ -52,7 +69,28 @@ Filebeat следует сконфигурировать для отправки
 
 В манифесте директории help также приведенно dummy-приложение, которое генерирует рандомные события в stdout-контейнера.
 Эти логи должны порождать индекс logstash-* в elasticsearch. Если этого индекса нет — воспользуйтесь советами и источниками из раздела «Дополнительные ссылки» этого задания.
- 
+
+## Решение 2
+ - Переходим в меню создания index-patterns  в kibana и создаем несколько index-patterns из имеющихся
+<p align="center">
+  <img width="1200" height="600" src="./image/index1.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/index2.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/index3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/index4.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/index5.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/index6.png">
+</p>
+
 ---
 
 ### Как оформить решение задания
