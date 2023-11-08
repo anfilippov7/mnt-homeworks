@@ -158,7 +158,7 @@ node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}
 
 ## Решение 4
 
- - Сохраняем созданный Dashboard. Переходим в настройки Dashboard, выбераем в боковом меню «JSON MODEL». Копируем отображаемое json-содержимое в отдельный файл и сохраняем его, содержимое файла в ссылке ниже.
+ - Сохраняем созданный Dashboard. Переходим в настройки Dashboard, выбераем в боковом меню «JSON MODEL». Копируем отображаемое json-содержимое в отдельный файл и сохраняем его, содержимое файла домтупно в ссылке.
 [json_model.json](https://github.com/anfilippov7/mnt-homeworks/blob/MNT-video/10-monitoring-03-grafana/json_model.json)
 
 ---
