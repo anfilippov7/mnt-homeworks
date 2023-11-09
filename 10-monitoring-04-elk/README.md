@@ -111,7 +111,11 @@ vm.max_map_count = 262144
 <p align="center">
   <img width="1200" height="600" src="./image/index.png">
 </p>
- 
+ - Настраиваем kibana для просмотра логов которые генерирует контейнер ***0f84f8d338f2   python:3.9-alpine***
+<p align="center">
+  <img width="1200" height="600" src="./image/python.png">
+</p> 
+  
 ---
 
 ### Как оформить решение задания
