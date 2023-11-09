@@ -90,7 +90,28 @@ vm.max_map_count = 262144
 <p align="center">
   <img width="1200" height="600" src="./image/index6.png">
 </p>
+ - Переходим в меню просмотра логов в kibana (Discover) и изучаем, как отображаются логи и как производить поиск по логам.
+<p align="center">
+  <img width="1200" height="600" src="./image/kibana_search1.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/kibana_search2.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/kibana_search3.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/kibana_search4.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/kibana_search5.png">
+</p>
 
+ - Проверяем индекс logstash-* в elasticsearch
+<p align="center">
+  <img width="1200" height="600" src="./image/index.png">
+</p>
+ 
 ---
 
 ### Как оформить решение задания
