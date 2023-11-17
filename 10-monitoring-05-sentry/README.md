@@ -106,6 +106,45 @@ Free Cloud account имеет ограничения:
 2. Поэкспериментируйте с различными передаваемыми параметрами, но помните об ограничениях Free учётной записи Cloud Sentry.
 3. В качестве решения задания пришлите скриншот меню issues вашего проекта и пример кода подключения sentry sdk/отсылки событий.
 
+
+## Решение задание повышенной сложности
+
+1. Создаем скрип на Python для запроса и отображения температуры воздуха по назаанию города, если названия города не существует обрабатывается ошибка `AttributeError` и передается sentry SDK
+ - код скрипта 
+```
+import sentry_sdk
+from pygismeteo import Gismeteo
+
+def temperature_air(town):
+    try:
+        gismeteo = Gismeteo()
+        search_results = gismeteo.search.by_query(town)
+        city_id = search_results[0].id
+        current = gismeteo.current.by_id(city_id)
+        print(f'Температура в городе {town} составляет {current.temperature.air.c} градусов цельсия')
+    except AttributeError:
+        pass      
+
+sentry_sdk.init(
+    dsn="https://d463da0b5af9be72ed2cb06066bd6d21@o4506223878537216.ingest.sentry.io/4506234346340352",
+    environment="development",
+    release='1.0'
+)
+
+if __name__ == "__main__":
+    temperature_air(town=input("Введите название города в котором вы хотите узнать температуру воздуха: "))
+```
+ - результат выполнения
+<p align="center">
+  <img width="1200" height="600" src="./image/sentry13.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/sentry14.png">
+</p>
+<p align="center">
+  <img width="1200" height="600" src="./image/sentry15.png">
+</p>
+
 ---
 
 ### Как оформить решение задания
