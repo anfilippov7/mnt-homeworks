@@ -134,7 +134,8 @@ sentry_sdk.init(
 if __name__ == "__main__":
     temperature_air(town=input("Введите название города в котором вы хотите узнать температуру воздуха: "))
 ```
- - результат выполнения
+ - результат выполнения, при возникновении ошибки в sentry передается ошибка `IndexError`
+ 
 <p align="center">
   <img width="1200" height="600" src="./image/sentry13.png">
 </p>
